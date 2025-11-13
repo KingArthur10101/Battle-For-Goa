@@ -109,7 +109,19 @@ public class canvasScript : MonoBehaviour
             extraHud.SetActive(true);
         }
     }
+    public void showBuildMenu()
+    {
+        buildingTitle.transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
+    }
 
+    public void hideBuildMenu()
+    {
+        buildingTitle.transform.GetChild(1).GetChild(1).gameObject.SetActive(false);
+    }
+    public void toggleBuildMenu()
+    {
+        buildingTitle.transform.GetChild(1).GetChild(1).gameObject.SetActive(!buildingTitle.transform.GetChild(1).GetChild(1).gameObject.activeSelf);
+    }
     public void updateUnitHUD(GameObject selectedGO)
     {
         switch (selectedGO.gameObject.tag)
