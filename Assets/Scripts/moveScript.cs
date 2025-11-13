@@ -19,10 +19,10 @@ public class moveScript : MonoBehaviour
     [SerializeField] private AudioClip hitSound;
     [SerializeField] private int damage;
     [SerializeField] private float moveSpeed;
-    [SerializeField] private float eyesight;
+    public float eyesight;
     [SerializeField] private float attackDistance;
     [SerializeField] private float attackTimer = 0f;
-    [SerializeField] private bool isAttacking = false;
+    public bool isAttacking = false;
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();

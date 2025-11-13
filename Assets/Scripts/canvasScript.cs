@@ -147,6 +147,8 @@ public class canvasScript : MonoBehaviour
         {
             case "Player":
                 unitTitle.SetActive(true);
+                buildingTitle.SetActive(false);
+                enemyTitle.SetActive(false);
                 unitTitle.transform.GetChild(0).GetComponent<Text>().text = selectedGO.name;
                 unitTitle.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = $"hp: {selectedGO.GetComponent<moveScript>().health} / {selectedGO.GetComponent<moveScript>().maxHealth}";
                 var mask = unitTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(0).GetComponent<RectMask2D>();
@@ -171,12 +173,13 @@ public class canvasScript : MonoBehaviour
                 unitTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = $"lvl: {selectedGO.GetComponent<moveScript>().lvl}\nex: {selectedGO.GetComponent<moveScript>().exp}/{selectedGO.GetComponent<moveScript>().nextExp}";
                 break;
             case "Respawn":
+                unitTitle.SetActive(false);
                 buildingTitle.SetActive(true);
-                buildingTitle.transform.GetChild(0).GetComponent<Text>().text = selectedGO.name;
+                enemyTitle.SetActive(false);                buildingTitle.transform.GetChild(0).GetComponent<Text>().text = selectedGO.name;
                 buildingTitle.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = $"hp: {selectedGO.GetComponent<baseScript>().health} / {selectedGO.GetComponent<baseScript>().maxHealth}";
                 var mask2 = buildingTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(0).GetComponent<RectMask2D>();
                 Vector4 p2 = mask2.padding;
-                p.z = Mathf.Lerp(0f, 384f, 1f - (float)selectedGO.GetComponent<baseScript>().health / selectedGO.GetComponent<baseScript>().maxHealth);
+                p2.z = Mathf.Lerp(0f, 384f, 1f - (float)selectedGO.GetComponent<baseScript>().health / selectedGO.GetComponent<baseScript>().maxHealth);
                 mask2.padding = p2;
                 if (baseB.GetComponent<baseScript>().constructing)
                 {
@@ -189,11 +192,20 @@ public class canvasScript : MonoBehaviour
                 buildingTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = $"lvl: {selectedGO.GetComponent<baseScript>().level}\nex: {selectedGO.GetComponent<baseScript>().exp} / {selectedGO.GetComponent<baseScript>().nextExp}";
                 break;
             case "Enemy":
+                unitTitle.SetActive(false);
+                buildingTitle.SetActive(false);
                 enemyTitle.SetActive(true);
                 enemyTitle.transform.GetChild(0).GetComponent<Text>().text = selectedGO.name;
                 var mask3 = enemyTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<RectMask2D>();
                 Vector4 p3 = mask3.padding;
-                p.z = Mathf.Lerp(0f, 384f, 1f - (float)selectedGO.GetComponent<enemyScript>().health / selectedGO.GetComponent<enemyScript>().maxHealth);
+                if (selectedGO.GetComponent<enemyScript>())
+                {
+                    p3.z = Mathf.Lerp(0f, 384f, 1f - (float)selectedGO.GetComponent<enemyScript>().health / selectedGO.GetComponent<enemyScript>().maxHealth);
+                }
+                else
+                {
+                    p3.z = Mathf.Lerp(0f, 384f, 1f - (float)selectedGO.GetComponent<spawnerScript>().health / selectedGO.GetComponent<spawnerScript>().maxHealth);                    
+                }
                 mask3.padding = p3;
                 break;
         }

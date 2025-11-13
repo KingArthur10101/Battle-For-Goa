@@ -75,38 +75,27 @@ public class clickLogger : MonoBehaviour
             if (hit2D.collider != null)
             {
                 GameObject go = hit2D.collider.gameObject;
-
-                if (go.CompareTag("Player"))
+                Debug.Log(go);
+                Debug.Log(selectedGO);
+                if (selectedGO != null && selectedGO.CompareTag("Player"))
                 {
-                    if (selectedGO != go)
-                    {
-                        ClearselectedGO();
-                        selectedGO = go;
-                        GameObject.FindGameObjectWithTag("GameController").GetComponent<canvasScript>().go = selectedGO;
-                    }
+                    selectedGO.GetComponent<moveScript>().setTarget(go);
                 }
-                else if (go.CompareTag("Enemy"))
+                if (go == selectedGO)
                 {
-                    if (selectedGO != null && selectedGO.CompareTag("Player"))
-                    {
-                        selectedGO.GetComponent<moveScript>().setTarget(go);
-                    }
-                    else
-                    {
-                        ClearselectedGO();
-                        selectedGO = go;
-                        GameObject.FindGameObjectWithTag("GameController").GetComponent<canvasScript>().go = selectedGO;
-                    }
+                    ClearselectedGO();
                 }
-                else if (go.CompareTag("Respawn"))
+                else
                 {
                     ClearselectedGO();
                     selectedGO = go;
-                    GameObject.FindGameObjectWithTag("GameController").GetComponent<canvasScript>().go = selectedGO;
+                    GameObject.FindGameObjectWithTag("GameController").GetComponent<canvasScript>().go = selectedGO;                    
                 }
             }
-            else if (selectedGO && selectedGO.CompareTag("Player")) { 
-                selectedGO.GetComponent<moveScript>().setTarget(worldPos);
+            else{
+                if (selectedGO && selectedGO.CompareTag("Player")) { 
+                    selectedGO.GetComponent<moveScript>().setTarget(worldPos);
+                }
                 ClearselectedGO();
             }
 

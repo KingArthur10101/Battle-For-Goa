@@ -5,7 +5,7 @@ public class spawnerScript : MonoBehaviour
 {
     [SerializeField] private float timer = 0f;
     [SerializeField] private float spawnInterval;
-    [SerializeField] private float maxHealth;
+    public float maxHealth;
     public float health;
     public GameObject enemy;
 

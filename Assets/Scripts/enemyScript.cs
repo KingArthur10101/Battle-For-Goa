@@ -58,16 +58,7 @@ public class enemyScript : MonoBehaviour
         {
             goal = findTarg(targetTroops);
         }
-        if (goal != null)
-        {
-            var ms = goal.GetComponent<moveScript>();
-            if (ms == null || !ms.alive)
-            {
-                if (targetTroops != null && goal.gameObject != null)
-                    targetTroops.Remove(goal.gameObject);
-                goal = null; // force re-acquire next frame
-            }
-        }
+        targetTroops = GameObject.FindGameObjectWithTag("GameController").GetComponent<canvasScript>().units;
         Color currentColor = spriteRenderer.color;
         currentColor.b = Mathf.Lerp(1f, 0f, attackTimer / attackTimerMax);
         currentColor.g = Mathf.Lerp(1f, 0f, attackTimer / attackTimerMax);

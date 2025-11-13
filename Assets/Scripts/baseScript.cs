@@ -61,7 +61,7 @@ public class baseScript : MonoBehaviour
 
     public void die()
     {
-        GameObject.FindGameObjectWithTag("audioManager").GetComponent<soundScript>().playClip(explode);
+        GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(explode);
         StartCoroutine(dieAnimation());
 
     }
