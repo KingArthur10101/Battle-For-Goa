@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2262712948723637646}
   - component: {fileID: -4360514646803664406}
   - component: {fileID: 7536491848708619861}
-  m_Layer: 2
+  m_Layer: 0
   m_Name: balanced
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -102,6 +102,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetTroops: []
   deathParticles: {fileID: 6531454911688422473, guid: ea1e15b44652af04ea9bc122c65e6958, type: 3}
+  hitSound: {fileID: 8300000, guid: 8bc755fe0f6e7eb44ba7c8e2c1f984e2, type: 3}
   goal: {fileID: 0}
   attackTimer: 0
   attackTimerMax: 4

@@ -16,6 +16,7 @@ public class moveScript : MonoBehaviour
     public float attackSpeed;
     public int exp = 0;
     public int nextExp = 5;
+    [SerializeField] private AudioClip hitSound;
     [SerializeField] private int damage;
     [SerializeField] private float moveSpeed;
     [SerializeField] private float eyesight;
@@ -78,7 +79,10 @@ public class moveScript : MonoBehaviour
             {
 
                 if (goal.gameObject.GetComponent<enemyScript>() != null)
+                {
                     goal.gameObject.GetComponent<enemyScript>().takeDamage(damage);
+                    GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(hitSound, true);
+                }
             }
         }
         agent.stoppingDistance = (goal != null && goal.tag == "targPrefab") ? 0f : 2f;

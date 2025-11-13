@@ -8,6 +8,7 @@ public class dialougeScript : MonoBehaviour
 {
     public int dialAdd = -1;
     public string dialName = "";
+    [SerializeField] private AudioClip snd;
 
     Dictionary<string, string[]> dialouge = new Dictionary<string, string[]>()
     {
@@ -31,6 +32,7 @@ public class dialougeScript : MonoBehaviour
         GameObject.FindGameObjectWithTag("GameController").transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Text>().text = dialouge[dialName][0];
         GameObject.FindGameObjectWithTag("GameController").transform.GetChild(0).gameObject.SetActive(false);
         GameObject.FindGameObjectWithTag("GameController").transform.GetChild(1).gameObject.SetActive(true);
+        GameObject.FindGameObjectWithTag("audioManager").GetComponent<soundScript>().playClip(snd);
         dialAdd = 0;
         dialName = dial;
     }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class enemyScript : MonoBehaviour
@@ -8,6 +9,7 @@ public class enemyScript : MonoBehaviour
     public List<GameObject> targetTroops = new List<GameObject>();
     public GameObject deathParticles;
     UnityEngine.AI.NavMeshAgent agent;
+    [SerializeField] private AudioClip hitSound;
     [SerializeField] private Transform goal;
     [SerializeField] private float attackTimer = 0f;
     [SerializeField] private float attackTimerMax;
@@ -104,7 +106,15 @@ public class enemyScript : MonoBehaviour
             {
 
                 if (goal.gameObject.GetComponent<moveScript>() != null)
+                {
                     goal.gameObject.GetComponent<moveScript>().takeDamage(damage);
+                    GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(hitSound, true);
+                }
+                if (goal.gameObject.GetComponent<baseScript>() != null)
+                {
+                    goal.gameObject.GetComponent<baseScript>().damage(damage);
+                    GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(hitSound, true);
+                }
             }
         }
     }
@@ -112,6 +122,7 @@ public class enemyScript : MonoBehaviour
     {
         alive = false;
         isAttacking = false;
+        attackTimer = 0;
         Component[] comps = GetComponents(typeof(Component));
         agent.SetDestination(transform.position);
         foreach (Component c in comps)
@@ -150,7 +161,7 @@ public class enemyScript : MonoBehaviour
     public Transform findTarg(List<GameObject> targetTroops_)
     {
         float minDistance = Mathf.Infinity;
-        Transform goal_ = null;
+        Transform goal_ = GameObject.FindGameObjectWithTag("Respawn").transform;
         foreach (GameObject i in targetTroops_)
         {
             if (Vector2.Distance(transform.position, i.transform.position) < minDistance)

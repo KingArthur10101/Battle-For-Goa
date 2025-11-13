@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-public class ClickLogger : MonoBehaviour
+public class clickLogger : MonoBehaviour
 {
     private GameObject selectedGO;
     public GameObject debugDot;
@@ -84,8 +84,6 @@ public class ClickLogger : MonoBehaviour
                         selectedGO = go;
                         GameObject.FindGameObjectWithTag("GameController").GetComponent<canvasScript>().go = selectedGO;
                     }
-
-                    return;
                 }
                 else if (go.CompareTag("Enemy"))
                 {

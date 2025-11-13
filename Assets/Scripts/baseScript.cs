@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
+using System.Linq;
 
 public class baseScript : MonoBehaviour
 {
@@ -9,7 +11,10 @@ public class baseScript : MonoBehaviour
         {"Fast", 2},
         {"Tank", 7}
     };
-    public GameObject[] units;
+    public GameObject[] unitsToBuild;
+    [SerializeField] private AudioClip explode;
+    [SerializeField] private GameObject fire;
+    public List<GameObject> units = new List<GameObject>();
     public int maxUnits;
     public GameObject constructing;
 
@@ -43,6 +48,45 @@ public class baseScript : MonoBehaviour
             timer = 0;
             money += perSecondCash;
         }
+        if (health <= 0)
+        {
+            die();
+        }
+    }
+
+    public void damage(int dmg)
+    {
+        health -= dmg;
+    }
+
+    public void die()
+    {
+        GameObject.FindGameObjectWithTag("audioManager").GetComponent<soundScript>().playClip(explode);
+        StartCoroutine(dieAnimation());
 
     }
+    IEnumerator dieAnimation()
+    {
+        List<GameObject> fires = new List<GameObject>();
+        GameObject fire_ = Instantiate(fire, transform.position + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f)), Quaternion.identity);
+        fires.Append(fire_);
+
+        yield return new WaitForSeconds(0.25f);
+
+
+        for (int i = 0; i < 4; i++)
+        {
+            fire_ = Instantiate(fire, transform.position + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f)), Quaternion.identity);
+            fires.Append(fire_);
+
+            yield return new WaitForSeconds(0.3f);
+        }
+
+        yield return new WaitForSeconds(0.7f);
+
+        foreach (GameObject fire in fires) {
+            Destroy(fire);
+        }
+    }
+
 }

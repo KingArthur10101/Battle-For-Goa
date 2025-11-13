@@ -9,6 +9,7 @@ TagManager:
   - targPrefab
   - pause
   - dialouge
+  - soundManager
   layers:
   - Default
   - TransparentFX

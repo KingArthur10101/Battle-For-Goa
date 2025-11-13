@@ -7,6 +7,9 @@ using UnityEngine.UI;
 public class canvasScript : MonoBehaviour
 {
     public List<GameObject> units = new List<GameObject>();
+    [SerializeField] private AudioClip ping1;
+    [SerializeField] private AudioClip ping2;
+    [SerializeField] private AudioClip back;
     public GameObject baseB;
     public GameObject unitTitle;
     public GameObject buildingTitle;
@@ -46,13 +49,13 @@ public class canvasScript : MonoBehaviour
 
     public void openDetails()
     {
-        if (unitTitle.transform.GetChild(0).gameObject.activeSelf)
+        if (unitTitle.transform.GetChild(1).gameObject.activeSelf)
         {
-            unitTitle.transform.GetChild(0).gameObject.SetActive(false);
+            unitTitle.transform.GetChild(1).gameObject.SetActive(false);
         }
         else
         {
-            unitTitle.transform.GetChild(0).gameObject.SetActive(true);
+            unitTitle.transform.GetChild(1).gameObject.SetActive(true);
         }
     }
 
@@ -76,7 +79,7 @@ public class canvasScript : MonoBehaviour
         hud.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Text>().text = $"${baseB.GetComponent<baseScript>().perSecondCash} / sec";
         if (baseB.GetComponent<baseScript>().constructing)
         {
-            hud.transform.GetChild(3).GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = $"${baseB.GetComponent<baseScript>().constructing.name}";
+            hud.transform.GetChild(3).GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = $"{baseB.GetComponent<baseScript>().constructing.name}";
         }
         else
         {
@@ -109,18 +112,34 @@ public class canvasScript : MonoBehaviour
             extraHud.SetActive(true);
         }
     }
+
+    public void setConstructing(int unit_)
+    {
+        baseB.GetComponent<baseScript>().constructing = baseB.GetComponent<baseScript>().unitsToBuild[unit_-1];
+        GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(ping2);
+        hideBuildMenu();
+    }
+
     public void showBuildMenu()
     {
-        buildingTitle.transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
+        buildingTitle.transform.GetChild(1).GetChild(1).GetChild(1).gameObject.SetActive(true);
+        GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(ping1);
     }
 
     public void hideBuildMenu()
     {
-        buildingTitle.transform.GetChild(1).GetChild(1).gameObject.SetActive(false);
+        buildingTitle.transform.GetChild(1).GetChild(1).GetChild(1).gameObject.SetActive(false);
     }
     public void toggleBuildMenu()
     {
-        buildingTitle.transform.GetChild(1).GetChild(1).gameObject.SetActive(!buildingTitle.transform.GetChild(1).GetChild(1).gameObject.activeSelf);
+        if (buildingTitle.transform.GetChild(1).GetChild(1).GetChild(1).gameObject.activeSelf){
+            GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(back);
+            hideBuildMenu();
+        }
+        else
+        {
+            showBuildMenu();
+        }
     }
     public void updateUnitHUD(GameObject selectedGO)
     {
@@ -136,11 +155,18 @@ public class canvasScript : MonoBehaviour
                 mask.padding = p;
                 if (selectedGO.GetComponent<moveScript>().goal)
                 {
-                    unitTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = $"target:\n{selectedGO.GetComponent<moveScript>().goal.gameObject.name}";
+                    if (!selectedGO.GetComponent<moveScript>().goal.gameObject.CompareTag("targPrefab"))
+                    {
+                        unitTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = $"target:\n{selectedGO.GetComponent<moveScript>().goal.gameObject.name}";
+                    }
+                    else
+                    {
+                        unitTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = "target:\nexplore";
+                    }
                 }
                 else
                 {
-                    unitTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = "target:\nexplore";
+                    unitTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = "target:\nnone";
                 }
                 unitTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = $"lvl: {selectedGO.GetComponent<moveScript>().lvl}\nex: {selectedGO.GetComponent<moveScript>().exp}/{selectedGO.GetComponent<moveScript>().nextExp}";
                 break;
@@ -165,7 +191,7 @@ public class canvasScript : MonoBehaviour
             case "Enemy":
                 enemyTitle.SetActive(true);
                 enemyTitle.transform.GetChild(0).GetComponent<Text>().text = selectedGO.name;
-                var mask3 = buildingTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<RectMask2D>();
+                var mask3 = enemyTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<RectMask2D>();
                 Vector4 p3 = mask3.padding;
                 p.z = Mathf.Lerp(0f, 384f, 1f - (float)selectedGO.GetComponent<enemyScript>().health / selectedGO.GetComponent<enemyScript>().maxHealth);
                 mask3.padding = p3;
