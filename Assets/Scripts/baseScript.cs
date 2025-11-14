@@ -2,19 +2,16 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using System.Linq;
+using Unity.VisualScripting.ReorderableList;
+using Unity.VisualScripting;
 
 public class baseScript : MonoBehaviour
 {
-    private Dictionary<string, float> timeToBuild = new Dictionary<string, float>
-    {
-        {"Normal", 5},
-        {"Fast", 2},
-        {"Tank", 7}
-    };
     public GameObject[] unitsToBuild;
     [SerializeField] private AudioClip explode;
     [SerializeField] private GameObject fire;
     public List<GameObject> units = new List<GameObject>();
+    [SerializeField] private float constructionTimer;
     public int maxUnits;
     public GameObject constructing;
 
@@ -28,12 +25,15 @@ public class baseScript : MonoBehaviour
     public int nextExp = 5;
     
     private float timer = 0;
+
+    private bool alive = true;
     
 
     void Start()
     {
         health = maxHealth;
         perSecondCash = 10;
+        constructionTimer = 0f;
     }
 
     // Update is called once per frame
@@ -48,9 +48,31 @@ public class baseScript : MonoBehaviour
             timer = 0;
             money += perSecondCash;
         }
-        if (health <= 0)
+        if (alive && health <= 0)
         {
             die();
+        }
+        if (constructing && constructionTimer >= constructing.GetComponent<moveScript>().timeToBuild)
+        {
+            constructionTimer = 0f;
+            money -= constructing.GetComponent<moveScript>().costToBuild;
+            GameObject newUnit = Instantiate(constructing, transform.position + new Vector3(Random.Range(-2f, 2f), Random.Range(-2f, 2f)), Quaternion.identity);
+            units.Add(newUnit);
+        }
+        if (constructing)
+        {
+            if (money >= constructing.GetComponent<moveScript>().costToBuild)
+            {                
+                constructionTimer += Time.deltaTime;
+            }
+            else
+            {
+                constructing = null;
+            }
+        }
+        else
+        {
+            constructionTimer = 0f;
         }
     }
 
@@ -61,6 +83,7 @@ public class baseScript : MonoBehaviour
 
     public void die()
     {
+        alive = false;
         GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(explode);
         StartCoroutine(dieAnimation());
 
@@ -68,16 +91,11 @@ public class baseScript : MonoBehaviour
     IEnumerator dieAnimation()
     {
         List<GameObject> fires = new List<GameObject>();
-        GameObject fire_ = Instantiate(fire, transform.position + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f)), Quaternion.identity);
-        fires.Append(fire_);
 
-        yield return new WaitForSeconds(0.25f);
-
-
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 5; i++)
         {
-            fire_ = Instantiate(fire, transform.position + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f)), Quaternion.identity);
-            fires.Append(fire_);
+            GameObject fire_ = Instantiate(fire, transform.position + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f)), Quaternion.identity);
+            fires.Add(fire_);
 
             yield return new WaitForSeconds(0.3f);
         }

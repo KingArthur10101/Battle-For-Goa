@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,8 +11,8 @@ public class dialougeScript : MonoBehaviour
     Dictionary<string, string[]> dialouge = new Dictionary<string, string[]>()
     {
         {"level1Intro", new string[]
-        {"My name is Stom, I will guide you through this first mission.",
-        "This is my second, and final pane of text. PP POOPOO"}
+        {"   My name is Stom, I will guide you through this first mission.",
+        "    This is my second, and final pane of text. PP POOPOO"}
         },
         {"level1Win", new string[]
         {"Congrats! First level down!",
@@ -28,11 +26,11 @@ public class dialougeScript : MonoBehaviour
     };
     public void startDialouge(string dial)
     {
-        GameObject.FindGameObjectWithTag("pause").GetComponent<pauseScript>().pauseGame();
-        GameObject.FindGameObjectWithTag("GameController").transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Text>().text = dialouge[dialName][0];
+        GameObject.FindGameObjectWithTag("pause").GetComponent<pauseScript>().pauseGame(true);
+        GameObject.FindGameObjectWithTag("GameController").transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Text>().text = dialouge[dial][0];
         GameObject.FindGameObjectWithTag("GameController").transform.GetChild(0).gameObject.SetActive(false);
         GameObject.FindGameObjectWithTag("GameController").transform.GetChild(1).gameObject.SetActive(true);
-        GameObject.FindGameObjectWithTag("audioManager").GetComponent<soundScript>().playClip(snd);
+        GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(snd);
         dialAdd = 0;
         dialName = dial;
     }
@@ -46,12 +44,12 @@ public class dialougeScript : MonoBehaviour
         else if (dialAdd < dialouge[dialName].Length - 1)
         {
             dialAdd += 1;
+            GameObject.FindGameObjectWithTag("GameController").transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Text>().text = dialouge[dialName][dialAdd];
         }
         else
         {
             endDialouge();
         }
-        GameObject.FindGameObjectWithTag("GameController").transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Text>().text = dialouge[dialName][dialAdd];
     }
 
     public void endDialouge()
@@ -60,7 +58,7 @@ public class dialougeScript : MonoBehaviour
         dialName = "";
         GameObject.FindGameObjectWithTag("GameController").transform.GetChild(0).gameObject.SetActive(true);
         GameObject.FindGameObjectWithTag("GameController").transform.GetChild(1).gameObject.SetActive(false);
-        GameObject.FindGameObjectWithTag("pause").GetComponent<pauseScript>().unpauseGame();
+        GameObject.FindGameObjectWithTag("pause").GetComponent<pauseScript>().unpauseGame(true);
     }
 
 }

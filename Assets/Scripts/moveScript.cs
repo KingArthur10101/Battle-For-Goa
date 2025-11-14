@@ -4,6 +4,9 @@ using System.Collections;
 
 public class moveScript : MonoBehaviour
 {
+    public int timeToBuild;
+    public int costToBuild;
+
 
     public bool alive = true;
     public GameObject deathParticles;
@@ -25,6 +28,7 @@ public class moveScript : MonoBehaviour
     public bool isAttacking = false;
     void Start()
     {
+        health = maxHealth;
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
@@ -75,14 +79,18 @@ public class moveScript : MonoBehaviour
         if (attackTimer >= attackSpeed)
         {
             attackTimer = 0f;
-            if (goal != null)
+            if (goal)
             {
-
                 if (goal.gameObject.GetComponent<enemyScript>() != null)
                 {
                     goal.gameObject.GetComponent<enemyScript>().takeDamage(damage);
                     GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(hitSound, true);
                 }
+                if (goal.gameObject.GetComponent<spawnerScript>() != null)
+                {
+                    goal.gameObject.GetComponent<spawnerScript>().takeDamage(damage);
+                    GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(hitSound, true);
+                }                
             }
         }
         agent.stoppingDistance = (goal != null && goal.tag == "targPrefab") ? 0f : 2f;

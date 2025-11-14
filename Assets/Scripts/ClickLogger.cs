@@ -1,10 +1,13 @@
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.EventSystems;
 public class clickLogger : MonoBehaviour
 {
+    public bool clicksAllowed;
     private GameObject selectedGO;
     public GameObject debugDot;
-    
+    [SerializeField] private AudioClip cPing;
+    [SerializeField] private AudioClip aPing;
     [SerializeField] private float zoomSpeed = 1f;
     [SerializeField] private float minZoom = 2f;
     [SerializeField] private float maxZoom = 8f;
@@ -59,7 +62,7 @@ public class clickLogger : MonoBehaviour
                 return;
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (clicksAllowed && Input.GetMouseButtonDown(0))
         {
             Vector3 mousePos = Input.mousePosition;
             Camera cam = Camera.main;
@@ -75,11 +78,14 @@ public class clickLogger : MonoBehaviour
             if (hit2D.collider != null)
             {
                 GameObject go = hit2D.collider.gameObject;
-                Debug.Log(go);
-                Debug.Log(selectedGO);
-                if (selectedGO != null && selectedGO.CompareTag("Player"))
+                if (selectedGO && selectedGO.CompareTag("Player") && go.CompareTag("Enemy"))
                 {
                     selectedGO.GetComponent<moveScript>().setTarget(go);
+                    GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(aPing);
+                }
+                else
+                {
+                    GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(cPing);
                 }
                 if (go == selectedGO)
                 {
@@ -95,6 +101,7 @@ public class clickLogger : MonoBehaviour
             else{
                 if (selectedGO && selectedGO.CompareTag("Player")) { 
                     selectedGO.GetComponent<moveScript>().setTarget(worldPos);
+                    GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(aPing);
                 }
                 ClearselectedGO();
             }

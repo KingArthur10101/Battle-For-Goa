@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using UnityEngine;
 
 public class pauseScript : MonoBehaviour
@@ -6,15 +8,39 @@ public class pauseScript : MonoBehaviour
     [SerializeField] AudioClip Psnd;
     [SerializeField] AudioClip UPsnd;
 
-    public void pauseGame()
+
+    public void Start()
+    {
+        GameObject.FindGameObjectWithTag("dialouge").GetComponent<dialougeScript>().startDialouge("level1Intro");
+    }
+
+    public void Update()
+    {
+        if (GameObject.FindGameObjectsWithTag("Enemy").Length <= 0)
+        {
+            StartCoroutine(endGame(true));
+        }
+        if (!GameObject.FindGameObjectWithTag("Respawn"))
+        {
+            StartCoroutine(endGame(false));
+        }
+    }
+
+    public void pauseGame(bool noSound = false)
     {
         pause = true;
-        GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(Psnd);
+        if (!noSound)
+        {
+            GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(Psnd);        
+        }
     }
-    public void unpauseGame()
+    public void unpauseGame(bool noSound = false)
     {
         pause = false;
-        GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(UPsnd);
+        if (!noSound)
+        {
+            GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(UPsnd);        
+        }
     }
     public void switchPause()
     {
@@ -26,5 +52,13 @@ public class pauseScript : MonoBehaviour
         {
             pauseGame();
         }
+    }
+
+    IEnumerator endGame(bool win)
+    {
+        yield return new WaitForSeconds(2f);
+        string txt;
+        if (win){ txt = "level1Win";} else { txt = "level1Lose";}
+        GameObject.FindGameObjectWithTag("dialouge").GetComponent<dialougeScript>().startDialouge(txt);        
     }
 }

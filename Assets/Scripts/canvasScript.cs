@@ -9,6 +9,7 @@ public class canvasScript : MonoBehaviour
     public List<GameObject> units = new List<GameObject>();
     [SerializeField] private AudioClip ping1;
     [SerializeField] private AudioClip ping2;
+    [SerializeField] private AudioClip sPing;
     [SerializeField] private AudioClip back;
     public GameObject baseB;
     public GameObject unitTitle;
@@ -47,16 +48,44 @@ public class canvasScript : MonoBehaviour
 
     }
 
-    public void openDetails()
+    public void openDetails(int type)
     {
-        if (unitTitle.transform.GetChild(1).gameObject.activeSelf)
+        switch (type)
         {
-            unitTitle.transform.GetChild(1).gameObject.SetActive(false);
+            case 0:
+                if (unitTitle.transform.GetChild(1).gameObject.activeSelf)
+                {
+                    unitTitle.transform.GetChild(1).gameObject.SetActive(false);
+                }
+                else
+                {
+                    unitTitle.transform.GetChild(1).gameObject.SetActive(true);
+                }
+            break;
+
+            case 1:
+                if (buildingTitle.transform.GetChild(1).gameObject.activeSelf)
+                {
+                    buildingTitle.transform.GetChild(1).gameObject.SetActive(false);
+                }
+                else
+                {
+                    buildingTitle.transform.GetChild(1).gameObject.SetActive(true);
+                }
+            break;
+
+            case 2:
+                if (enemyTitle.transform.GetChild(1).gameObject.activeSelf)
+                {
+                    enemyTitle.transform.GetChild(1).gameObject.SetActive(false);
+                }
+                else
+                {
+                    enemyTitle.transform.GetChild(1).gameObject.SetActive(true);
+                }
+            break;
         }
-        else
-        {
-            unitTitle.transform.GetChild(1).gameObject.SetActive(true);
-        }
+        GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(sPing);
     }
 
     public void updateMainHUD()
@@ -99,6 +128,7 @@ public class canvasScript : MonoBehaviour
             minimap.SetActive(false);
             minimapButtonUP.SetActive(true);
         }
+        GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(sPing);
     }
 
     public void hideExtraHud()
@@ -111,13 +141,21 @@ public class canvasScript : MonoBehaviour
         {
             extraHud.SetActive(true);
         }
+        GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(sPing);
     }
 
     public void setConstructing(int unit_)
     {
-        baseB.GetComponent<baseScript>().constructing = baseB.GetComponent<baseScript>().unitsToBuild[unit_-1];
-        GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(ping2);
-        hideBuildMenu();
+        if (baseB.GetComponent<baseScript>().money > baseB.GetComponent<baseScript>().unitsToBuild[unit_].GetComponent<moveScript>().costToBuild)
+        {
+            baseB.GetComponent<baseScript>().constructing = baseB.GetComponent<baseScript>().unitsToBuild[unit_];
+            GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(ping2);
+            hideBuildMenu();
+        }
+        else
+        {
+            GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(back);
+        }
     }
 
     public void showBuildMenu()
