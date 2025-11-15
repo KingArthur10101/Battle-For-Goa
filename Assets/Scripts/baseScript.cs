@@ -9,6 +9,7 @@ public class baseScript : MonoBehaviour
 {
     public GameObject[] unitsToBuild;
     [SerializeField] private AudioClip explode;
+    [SerializeField] private AudioClip gameOver;
     [SerializeField] private GameObject fire;
     public List<GameObject> units = new List<GameObject>();
     [SerializeField] private float constructionTimer;
@@ -26,11 +27,12 @@ public class baseScript : MonoBehaviour
     
     private float timer = 0;
 
-    private bool alive = true;
+    public bool alive = true;
     
 
     void Start()
     {
+        units = GameObject.FindGameObjectsWithTag("Player").ToList();
         health = maxHealth;
         perSecondCash = 10;
         constructionTimer = 0f;
@@ -58,6 +60,7 @@ public class baseScript : MonoBehaviour
             money -= constructing.GetComponent<moveScript>().costToBuild;
             GameObject newUnit = Instantiate(constructing, transform.position + new Vector3(Random.Range(-2f, 2f), Random.Range(-2f, 2f)), Quaternion.identity);
             units.Add(newUnit);
+            print(newUnit);
         }
         if (constructing)
         {
@@ -84,7 +87,9 @@ public class baseScript : MonoBehaviour
     public void die()
     {
         alive = false;
+        GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().stopMusic();
         GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(explode);
+        GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(gameOver);
         StartCoroutine(dieAnimation());
 
     }
@@ -92,7 +97,7 @@ public class baseScript : MonoBehaviour
     {
         List<GameObject> fires = new List<GameObject>();
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 3; i++)
         {
             GameObject fire_ = Instantiate(fire, transform.position + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f)), Quaternion.identity);
             fires.Add(fire_);

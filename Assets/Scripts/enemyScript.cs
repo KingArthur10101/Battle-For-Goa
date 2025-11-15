@@ -58,7 +58,7 @@ public class enemyScript : MonoBehaviour
         {
             goal = findTarg(targetTroops);
         }
-        targetTroops = GameObject.FindGameObjectWithTag("GameController").GetComponent<canvasScript>().units;
+        targetTroops = GameObject.FindGameObjectWithTag("Respawn").GetComponent<baseScript>().units;
         Color currentColor = spriteRenderer.color;
         currentColor.b = Mathf.Lerp(1f, 0f, attackTimer / attackTimerMax);
         currentColor.g = Mathf.Lerp(1f, 0f, attackTimer / attackTimerMax);
@@ -152,7 +152,15 @@ public class enemyScript : MonoBehaviour
     public Transform findTarg(List<GameObject> targetTroops_)
     {
         float minDistance = Mathf.Infinity;
-        Transform goal_ = GameObject.FindGameObjectWithTag("Respawn").transform;
+        Transform goal_;
+        if (GameObject.FindGameObjectWithTag("Respawn").GetComponent<baseScript>().alive)
+        {
+            goal_ = GameObject.FindGameObjectWithTag("Respawn").transform;
+        }
+        else
+        {
+            goal_ = null;
+        }
         foreach (GameObject i in targetTroops_)
         {
             if (Vector2.Distance(transform.position, i.transform.position) < minDistance)

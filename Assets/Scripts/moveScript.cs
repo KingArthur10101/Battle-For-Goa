@@ -121,7 +121,7 @@ public class moveScript : MonoBehaviour
 
     private void die()
     {
-        GameObject.FindGameObjectWithTag("GameController").GetComponent<canvasScript>().units.Remove(this.gameObject);
+        GameObject.FindGameObjectWithTag("Respawn").GetComponent<baseScript>().units.Remove(this.gameObject);
         if (GameObject.FindGameObjectWithTag("GameController").GetComponent<canvasScript>().go == this.gameObject) {
             GameObject.FindGameObjectWithTag("GameController").GetComponent<canvasScript>().go = null;
         }

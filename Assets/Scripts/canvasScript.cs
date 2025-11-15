@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class canvasScript : MonoBehaviour
 {
-    public List<GameObject> units = new List<GameObject>();
     [SerializeField] private AudioClip ping1;
     [SerializeField] private AudioClip ping2;
     [SerializeField] private AudioClip sPing;
@@ -24,7 +23,6 @@ public class canvasScript : MonoBehaviour
 
     void Start()
     {
-        units = GameObject.FindGameObjectsWithTag("Player").ToList();
         baseB = GameObject.FindGameObjectWithTag("Respawn");
     }
 
@@ -41,7 +39,7 @@ public class canvasScript : MonoBehaviour
             buildingTitle.SetActive(false);
         }
         updateMainHUD();
-        if (units.Count() == 0)
+        if (baseB.GetComponent<baseScript>().units.Count() == 0)
         {
             unitTitle.SetActive(false);
         }
@@ -104,7 +102,8 @@ public class canvasScript : MonoBehaviour
         mask.padding = p;
         hud.transform.GetChild(2).GetComponent<Text>().text = $"lvl: {baseB.GetComponent<baseScript>().level}";
         hud.transform.GetChild(0).GetComponent<Text>().text = $"$ {baseB.GetComponent<baseScript>().money}";
-        hud.transform.GetChild(3).GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = $"{units.Count} / 5";
+        hud.transform.GetChild(3).GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = $"{baseB.GetComponent<baseScript>().units.Count} / {baseB.GetComponent<baseScript>().maxUnits}";
+        hud.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Text>().text = $"{baseB.GetComponent<baseScript>().health} / {baseB.GetComponent<baseScript>().maxHealth}";
         hud.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Text>().text = $"${baseB.GetComponent<baseScript>().perSecondCash} / sec";
         if (baseB.GetComponent<baseScript>().constructing)
         {

@@ -4,9 +4,23 @@ using UnityEngine;
 public class soundScript : MonoBehaviour
 {
     [SerializeField] private AudioSource audioPrefab;
+    [SerializeField] private AudioSource bgMusic;
+    public bool sfx;
+    public bool msc;
+    void Start()
+    {
+        if (!msc)
+        {
+            bgMusic.Stop();
+        }
+    }
 
     public void playClip(AudioClip clip, Boolean randPitch = false)
     {
+        if (!sfx)
+        {
+            return;
+        }
         float pitch = 1f;
         if (randPitch)
         {
@@ -19,4 +33,12 @@ public class soundScript : MonoBehaviour
         Destroy(source.gameObject, source.clip.length);
     }
 
+    public void stopMusic()
+    {
+        bgMusic.Pause();
+    }
+    public void startMusic()
+    {
+        bgMusic.Play();
+    }
 }
