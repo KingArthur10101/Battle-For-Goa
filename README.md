@@ -24,3 +24,6 @@ First, in the main menu, either Sound Effects and Background Music can be toggle
 When playing, there is a Heads-Up-Display in your top-right at all times. Click it to show more or less, including the pause button. This will display key data such as how many of your units are on the board, as well as your home base's health.
 
 Your job is to defend your base from enemies. If it is destroyed, you lose the game. On top of that, click your units to assign them targets, fight enemies, and take of the enemies' base  to win!
+
+INSPIRATION CITATIONS
+Suzuki, Toshihiro. Crystalis. SNK, 1990.
