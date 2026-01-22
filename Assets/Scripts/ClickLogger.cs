@@ -1,5 +1,5 @@
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+
 using UnityEngine.EventSystems;
 public class clickLogger : MonoBehaviour
 {
@@ -8,10 +8,13 @@ public class clickLogger : MonoBehaviour
     public GameObject debugDot;
     [SerializeField] private AudioClip cPing;
     [SerializeField] private AudioClip aPing;
-    [SerializeField] private float zoomSpeed = 1f;
-    [SerializeField] private float minZoom = 2f;
-    [SerializeField] private float maxZoom = 8f;
-    [SerializeField] private float panSpeed = 10f;
+    [SerializeField] private float zoomSpeed;
+    [SerializeField] private float minZoom;
+    [SerializeField] private float maxZoom;
+    [SerializeField] private float panSpeed;
+    [SerializeField] private float arrowsPanSpeed;
+    [SerializeField] private float inpX;
+    [SerializeField] private float inpY;
     private bool isDragging = false;
     private Vector3 lastMousePosition;
     private Camera mainCamera;
@@ -23,6 +26,12 @@ public class clickLogger : MonoBehaviour
 
     void Update()
     {
+        inpX = Input.GetAxisRaw("Horizontal");
+        inpY = Input.GetAxisRaw("Vertical");
+
+        mainCamera.GetComponent<BoxCollider2D>().size = new Vector2(mainCamera.orthographicSize * 2f * mainCamera.aspect, mainCamera.orthographicSize * 2f);
+        mainCamera.transform.position += Time.deltaTime * arrowsPanSpeed * new Vector3(inpX, inpY, 0f);
+
         if (mainCamera == null) return;
 
         float scrollDelta = Input.mouseScrollDelta.y;

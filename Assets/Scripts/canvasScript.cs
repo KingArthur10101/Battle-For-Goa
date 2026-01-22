@@ -38,8 +38,11 @@ public class canvasScript : MonoBehaviour
             enemyTitle.SetActive(false);
             buildingTitle.SetActive(false);
         }
-        updateMainHUD();
-        if (baseB.GetComponent<baseScript>().units.Count() == 0)
+        if (baseB && baseB.GetComponent<baseScript>().alive)
+        {
+            updateMainHUD();
+        }
+        if (baseB && baseB.GetComponent<baseScript>().units.Count() == 0)
         {
             unitTitle.SetActive(false);
         }
@@ -145,7 +148,7 @@ public class canvasScript : MonoBehaviour
 
     public void setConstructing(int unit_)
     {
-        if (baseB.GetComponent<baseScript>().money > baseB.GetComponent<baseScript>().unitsToBuild[unit_].GetComponent<moveScript>().costToBuild)
+        if (baseB.GetComponent<baseScript>().units.Count < baseB.GetComponent<baseScript>().maxUnits && baseB.GetComponent<baseScript>().money > baseB.GetComponent<baseScript>().unitsToBuild[unit_].GetComponent<moveScript>().costToBuild)
         {
             baseB.GetComponent<baseScript>().constructing = baseB.GetComponent<baseScript>().unitsToBuild[unit_];
             GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(ping2);
@@ -246,5 +249,9 @@ public class canvasScript : MonoBehaviour
                 mask3.padding = p3;
                 break;
         }
+    }
+    public void unitReturn()
+    {
+        go.GetComponent<moveScript>().setTarget(baseB);
     }
 }

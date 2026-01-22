@@ -19,6 +19,7 @@ public class moveScript : MonoBehaviour
     public float attackSpeed;
     public int exp = 0;
     public int nextExp = 5;
+    private Animator anim;
     [SerializeField] private AudioClip hitSound;
     [SerializeField] private int damage;
     [SerializeField] private float moveSpeed;
@@ -28,6 +29,7 @@ public class moveScript : MonoBehaviour
     public bool isAttacking = false;
     void Start()
     {
+        anim = GetComponent<Animator>();
         health = maxHealth;
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
@@ -37,6 +39,7 @@ public class moveScript : MonoBehaviour
     }
     void Update()
     {
+        anim.SetBool("isAttacking", false);
         if (GameObject.FindGameObjectWithTag("pause").GetComponent<pauseScript>().pause)
         {
             agent.speed = 0f;
@@ -45,7 +48,12 @@ public class moveScript : MonoBehaviour
         {
             agent.speed = moveSpeed;
         }
-
+        if(agent.velocity.magnitude > 0.25)
+        {
+            anim.SetFloat("moveX", agent.velocity.x);
+            anim.SetFloat("moveY", agent.velocity.y);
+        }
+        anim.SetFloat("Magnitude", agent.velocity.magnitude);
         if (goal)
         {
             agent.SetDestination(goal.transform.position);
@@ -85,11 +93,13 @@ public class moveScript : MonoBehaviour
                 {
                     goal.gameObject.GetComponent<enemyScript>().takeDamage(damage);
                     GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(hitSound, true);
+                    anim.SetBool("isAttacking", true);
                 }
                 if (goal.gameObject.GetComponent<spawnerScript>() != null)
                 {
                     goal.gameObject.GetComponent<spawnerScript>().takeDamage(damage);
                     GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(hitSound, true);
+                    anim.SetBool("isAttacking", true);
                 }                
             }
         }

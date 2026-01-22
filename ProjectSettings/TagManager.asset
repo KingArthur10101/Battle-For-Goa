@@ -10,6 +10,8 @@ TagManager:
   - pause
   - dialouge
   - soundManager
+  - Load
+  - NOTeditoronly
   layers:
   - Default
   - TransparentFX

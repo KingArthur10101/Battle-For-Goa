@@ -5,11 +5,9 @@ public class soundScript : MonoBehaviour
 {
     [SerializeField] private AudioSource audioPrefab;
     [SerializeField] private AudioSource bgMusic;
-    public bool sfx;
-    public bool msc;
     void Start()
     {
-        if (!msc)
+        if (!GameObject.FindGameObjectWithTag("Load").GetComponent<loadScript>().musicOn)
         {
             bgMusic.Stop();
         }
@@ -17,10 +15,6 @@ public class soundScript : MonoBehaviour
 
     public void playClip(AudioClip clip, Boolean randPitch = false)
     {
-        if (!sfx)
-        {
-            return;
-        }
         float pitch = 1f;
         if (randPitch)
         {
@@ -35,10 +29,15 @@ public class soundScript : MonoBehaviour
 
     public void stopMusic()
     {
-        bgMusic.Pause();
-    }
+        if (bgMusic.isPlaying)
+        {
+            bgMusic.Pause();
+        }    }
     public void startMusic()
     {
-        bgMusic.Play();
+        if (!bgMusic.isPlaying)
+        {
+            bgMusic.Play();
+        }
     }
 }

@@ -58,7 +58,10 @@ public class enemyScript : MonoBehaviour
         {
             goal = findTarg(targetTroops);
         }
-        targetTroops = GameObject.FindGameObjectWithTag("Respawn").GetComponent<baseScript>().units;
+        if (GameObject.FindGameObjectWithTag("Respawn"))
+        {
+            targetTroops = GameObject.FindGameObjectWithTag("Respawn").GetComponent<baseScript>().units;
+        }
         Color currentColor = spriteRenderer.color;
         currentColor.b = Mathf.Lerp(1f, 0f, attackTimer / attackTimerMax);
         currentColor.g = Mathf.Lerp(1f, 0f, attackTimer / attackTimerMax);
@@ -66,8 +69,18 @@ public class enemyScript : MonoBehaviour
 
         if (alive && goal != null) { 
             agent.SetDestination(goal.position);
+        }
+        if (agent.velocity.magnitude > 0)
+        {
+            animator.SetFloat("yMove", agent.velocity.normalized.y);
             animator.SetFloat("xMove", agent.velocity.normalized.x);
-            animator.SetFloat("yMove", agent.velocity.normalized.y);        
+        }
+        animator.SetFloat("Magnitude", agent.velocity.magnitude);
+        animator.SetBool("isAttacking", false);
+
+        if (goal && Vector2.Distance(transform.position, goal.position) <= 8)
+        {
+            attackDistance = 10;
         }
 
         if (goal != null && Vector2.Distance(transform.position, goal.position) <= attackDistance)
@@ -95,16 +108,17 @@ public class enemyScript : MonoBehaviour
             attackTimer = 0f;
             if (goal != null)
             {
-
                 if (goal.gameObject.GetComponent<moveScript>() != null)
                 {
                     goal.gameObject.GetComponent<moveScript>().takeDamage(damage);
                     GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(hitSound, true);
+                    animator.SetBool("isAttacking", true);
                 }
                 if (goal.gameObject.GetComponent<baseScript>() != null)
                 {
                     goal.gameObject.GetComponent<baseScript>().damage(damage);
                     GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(hitSound, true);
+                    animator.SetBool("isAttacking", true);
                 }
             }
         }
@@ -152,8 +166,8 @@ public class enemyScript : MonoBehaviour
     public Transform findTarg(List<GameObject> targetTroops_)
     {
         float minDistance = Mathf.Infinity;
-        Transform goal_;
-        if (GameObject.FindGameObjectWithTag("Respawn").GetComponent<baseScript>().alive)
+        Transform goal_ = null;
+        if (GameObject.FindGameObjectWithTag("Respawn") && GameObject.FindGameObjectWithTag("Respawn").GetComponent<baseScript>().alive)
         {
             goal_ = GameObject.FindGameObjectWithTag("Respawn").transform;
         }
@@ -175,4 +189,12 @@ public class enemyScript : MonoBehaviour
     {
         health -= dmg;
     }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(0f, 1f, 0f, 1f);
+
+        Gizmos.DrawWireSphere(transform.position, attackDistance);
+    }
+
 }

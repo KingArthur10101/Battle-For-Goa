@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using System.Linq;
-using Unity.VisualScripting.ReorderableList;
-using Unity.VisualScripting;
 
 public class baseScript : MonoBehaviour
 {
@@ -59,6 +57,7 @@ public class baseScript : MonoBehaviour
             constructionTimer = 0f;
             money -= constructing.GetComponent<moveScript>().costToBuild;
             GameObject newUnit = Instantiate(constructing, transform.position + new Vector3(Random.Range(-2f, 2f), Random.Range(-2f, 2f)), Quaternion.identity);
+            newUnit.name = constructing.name;
             units.Add(newUnit);
             print(newUnit);
         }
@@ -97,9 +96,9 @@ public class baseScript : MonoBehaviour
     {
         List<GameObject> fires = new List<GameObject>();
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 5; i++)
         {
-            GameObject fire_ = Instantiate(fire, transform.position + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f)), Quaternion.identity);
+            GameObject fire_ = Instantiate(fire, transform.position + new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f)), Quaternion.identity);
             fires.Add(fire_);
 
             yield return new WaitForSeconds(0.3f);
@@ -110,6 +109,7 @@ public class baseScript : MonoBehaviour
         foreach (GameObject fire in fires) {
             Destroy(fire);
         }
+        Destroy(gameObject);
     }
 
 }
