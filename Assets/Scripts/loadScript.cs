@@ -1,59 +1,69 @@
-using System.Collections.Generic;
+using System;
+using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class loadScript : MonoBehaviour
 {
     public bool musicOn;
-    public string unlocked = "";
-    public GameObject fstButton;
-
+    public float zoomSpeed;
+    public float minZoom;
+    public float maxZoom;
+    public float panSpeed;
+    public float arrowsPanSpeed;
     void Start()
     {
         DontDestroyOnLoad(gameObject);
-        if (PlayerPrefs.HasKey("unlocked"))
-        {
-            unlocked = PlayerPrefs.GetString("unlocked");
-            Debug.Log($"SAVE FOUND");
-        }
-        else
-        {
-            unlocked = "1";
-            PlayerPrefs.SetString("unlocked", unlocked);
-            Debug.Log($"SAVE MADE");
-        }
-        fstButton = GameObject.FindGameObjectWithTag("NOTeditoronly").transform.GetChild(2).GetChild(1).gameObject;
-        Debug.Log($"FOUND FSTBUTTON: {fstButton}");
-        Debug.Log($"FOUND FSTBUTTON: {fstButton}");
-        foreach (char chr in PlayerPrefs.GetString("unlocked"))
-        {
-            switch (chr){
-            case '1':
-                fstButton.transform.GetChild(2).GetComponent<Button>().interactable = true;
-                break;
-            case '2':
-                fstButton.GetComponent<Button>().interactable = true;
-                break;
-            case '3':
-                fstButton.transform.GetChild(1).GetComponent<Button>().interactable = true;
-                break;
-            }
-            Debug.Log($"UNLOCKED LVL: {chr}");
-        }
     }
 
     public void startLvl(int lvl)
     {
-        fstButton = null;
         SceneManager.LoadScene(lvl);
+        GameObject.FindGameObjectWithTag("GameController").GetComponent<canvasScript>().setSettings();
         Debug.Log($"STARTED LVL: {lvl}");
     }
 
     public void mainMenu()
     {
         SceneManager.LoadScene(0);
-        Destroy(gameObject);
         Debug.Log($"BACK TO MAIN MENU");
+    }
+
+    public void changeSetting(int numSetting, bool upDown){
+
+        string[] settings = new string[] {"musicVol", "zoomSpeed", "panSpeed", "arrowPanSpeed"};
+        float[] settingsMins = new float[]{0,          2,           2,          2};
+        float[] settingsMaxs = new float[]{10,         5,           5,          5};
+        float[] settingsAdj = new float[] {1,          1,           1,          1};
+
+        if (PlayerPrefs.HasKey(settings[numSetting]))
+        {
+            if (upDown)
+            {
+                // SET SETTINGS TO TEMP VALUE AND ADD FUNCTION TO APPLY THOSE TO PLAYERPREF VALUES
+                Mathf.Clamp(PlayerPrefs.GetFloat(settings[numSetting]) + settingsAdj[numSetting], settingsMins[numSetting], settingsMaxs[numSetting]);
+            }
+            else
+            {
+                Mathf.Clamp(PlayerPrefs.GetFloat(settings[numSetting]) - settingsAdj[numSetting], settingsMins[numSetting], settingsMaxs[numSetting]);                
+            }
+        }
+        else
+        {
+            Debug.Log("Never seen setting: "+settings[numSetting]);
+            return;
+        }
+    }
+
+    public void finishLevel()
+    {
+        if(!PlayerPrefs.HasKey("unlocked")) return;
+        if(PlayerPrefs.GetInt("unlocked") == SceneManager.GetActiveScene().buildIndex)
+        {
+            PlayerPrefs.SetInt("unlocked", PlayerPrefs.GetInt("unlocked")+1);
+        }
+        mainMenu();
     }
 }

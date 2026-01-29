@@ -74,6 +74,7 @@ public class dialougeScript : MonoBehaviour
         if (dialAdd == -1)
         {
             Debug.Log("Error Accessing Dialouge");
+            endDialouge();
         }
         else if (dialAdd < dialouge[dialName].Length - 1)
         {

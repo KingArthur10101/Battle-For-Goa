@@ -6,8 +6,6 @@ public class moveScript : MonoBehaviour
 {
     public int timeToBuild;
     public int costToBuild;
-
-
     public bool alive = true;
     public GameObject deathParticles;
     public GameObject goal;
@@ -39,6 +37,7 @@ public class moveScript : MonoBehaviour
     }
     void Update()
     {
+        Debug.Log(goal);
         anim.SetBool("isAttacking", false);
         if (GameObject.FindGameObjectWithTag("pause").GetComponent<pauseScript>().pause)
         {
@@ -61,10 +60,6 @@ public class moveScript : MonoBehaviour
         else
         {
             agent.SetDestination(transform.position);
-        }
-        if (health <= 0)
-        {
-            die();
         }
         if (goal != null && Vector2.Distance(transform.position, goal.transform.position) <= attackDistance)
         {
@@ -103,7 +98,7 @@ public class moveScript : MonoBehaviour
                 }                
             }
         }
-        agent.stoppingDistance = (goal != null && goal.tag == "targPrefab") ? 0f : 2f;
+        agent.stoppingDistance = (goal != null && goal.tag == "targPrefab") ? 0f : 4f;
     }
 
     public void setTarget(GameObject newTarg)

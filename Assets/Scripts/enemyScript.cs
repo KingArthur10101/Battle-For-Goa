@@ -49,11 +49,6 @@ public class enemyScript : MonoBehaviour
         {
             agent.speed = moveSpeed;
         }
-
-        if(alive && health <= 0)
-        {
-            die();
-        }
         if (goal == null)
         {
             goal = findTarg(targetTroops);
@@ -188,6 +183,10 @@ public class enemyScript : MonoBehaviour
     public void takeDamage(int dmg)
     {
         health -= dmg;
+        if(health <= 0)
+        {
+            die();
+        }
     }
 
     private void OnDrawGizmos()

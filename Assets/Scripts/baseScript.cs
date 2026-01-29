@@ -13,9 +13,7 @@ public class baseScript : MonoBehaviour
     [SerializeField] private float constructionTimer;
     public int maxUnits;
     public GameObject constructing;
-
     public int money = 0;
-
     public int maxHealth;
     public int perSecondCash;
     public int level = 1;
@@ -36,7 +34,6 @@ public class baseScript : MonoBehaviour
         constructionTimer = 0f;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (!GameObject.FindGameObjectWithTag("pause").GetComponent<pauseScript>().pause)
@@ -90,7 +87,6 @@ public class baseScript : MonoBehaviour
         GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(explode);
         GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(gameOver);
         StartCoroutine(dieAnimation());
-
     }
     IEnumerator dieAnimation()
     {

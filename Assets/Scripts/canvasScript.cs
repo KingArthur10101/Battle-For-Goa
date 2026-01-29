@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class canvasScript : MonoBehaviour
@@ -9,21 +10,39 @@ public class canvasScript : MonoBehaviour
     [SerializeField] private AudioClip ping1;
     [SerializeField] private AudioClip ping2;
     [SerializeField] private AudioClip sPing;
+    [SerializeField] private AudioClip cPing;
     [SerializeField] private AudioClip back;
     public GameObject baseB;
-    public GameObject unitTitle;
-    public GameObject buildingTitle;
-    public GameObject enemyTitle;
-    public GameObject hud;
-    public GameObject extraHud;
+    private GameObject unitTitle;
+    private GameObject buildingTitle;
+    private GameObject enemyTitle;
+    private GameObject hud;
+    private GameObject extraHud;
 
+    private Camera mainCamera;
     public GameObject minimap;
     public GameObject minimapButtonUP;
     public GameObject go;
 
+
+    public bool clicksAllowed;
+    private GameObject selectedGO;
+    public GameObject debugDot;
+    [SerializeField] private float zoomSpeed;
+    [SerializeField] private float minZoom;
+    [SerializeField] private float maxZoom;
+    [SerializeField] private float panSpeed;
+    [SerializeField] private float arrowsPanSpeed;
+    private float inpX;
+    private float inpY;
+    private bool isDragging = false;
+    private Vector3 lastMousePosition;
+
     void Start()
     {
         baseB = GameObject.FindGameObjectWithTag("Respawn");
+        mainCamera = Camera.main;
+
     }
 
     void Update()
@@ -47,6 +66,90 @@ public class canvasScript : MonoBehaviour
             unitTitle.SetActive(false);
         }
 
+
+
+
+        // CLICK LOGGER
+        
+        inpX = Input.GetAxisRaw("Horizontal");
+        inpY = Input.GetAxisRaw("Vertical");
+
+        mainCamera.GetComponent<BoxCollider2D>().size = new Vector2(mainCamera.orthographicSize * 2f * mainCamera.aspect, mainCamera.orthographicSize * 2f);
+        mainCamera.transform.position += Time.deltaTime * arrowsPanSpeed * new Vector3(inpX, inpY, 0f);
+
+        float scrollDelta = Input.mouseScrollDelta.y;
+        if (scrollDelta != 0)
+        {
+            Vector3 mousePos = Input.mousePosition;
+            Vector3 beforeZoom = mainCamera.ScreenToWorldPoint(mousePos);
+            
+            mainCamera.orthographicSize = Mathf.Clamp(mainCamera.orthographicSize - (scrollDelta * zoomSpeed), minZoom, maxZoom);
+            
+            Vector3 afterZoom = mainCamera.ScreenToWorldPoint(mousePos);
+            mainCamera.transform.position -= afterZoom - beforeZoom;
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            isDragging = true;
+            lastMousePosition = Input.mousePosition;
+        }
+        else if (Input.GetMouseButtonUp(1))
+        {
+            isDragging = false;
+        }
+
+        if (isDragging)
+        {
+            Vector3 delta = Input.mousePosition - lastMousePosition;
+            Vector3 translate = new Vector3(-delta.x * panSpeed * Time.deltaTime, -delta.y * panSpeed * Time.deltaTime, 0);
+            translate = translate * (mainCamera.orthographicSize / 5f); // Scale pan speed with zoom level
+            mainCamera.transform.Translate(translate);
+            lastMousePosition = Input.mousePosition;
+        }
+
+        if (clicksAllowed && Input.GetMouseButtonDown(0))
+        {
+            Vector3 mousePos = Input.mousePosition;
+
+            Vector3 worldPos = mainCamera.ScreenToWorldPoint(mousePos);
+            worldPos.z = 0;
+
+            Ray ray = mainCamera.ScreenPointToRay(mousePos);
+            RaycastHit2D hit2D = Physics2D.GetRayIntersection(ray);
+
+            if (hit2D.collider != null)
+            {
+                GameObject go = hit2D.collider.gameObject;
+                if (selectedGO && selectedGO.CompareTag("Player") && go.CompareTag("Enemy"))
+                {
+                    selectedGO.GetComponent<moveScript>().setTarget(go);
+                    GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(ping2);
+                }
+                else
+                {
+                    GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(cPing);
+                }
+                if (go == selectedGO)
+                {
+                    ClearselectedGO();
+                }
+                else
+                {
+                    ClearselectedGO();
+                    selectedGO = go;
+                    GameObject.FindGameObjectWithTag("GameController").GetComponent<canvasScript>().go = selectedGO;                    
+                }
+            }
+            else{
+                if (selectedGO && selectedGO.CompareTag("Player")) { 
+                    selectedGO.GetComponent<moveScript>().setTarget(worldPos);
+                    GameObject.FindGameObjectWithTag("soundManager").GetComponent<soundScript>().playClip(ping2);
+                }
+                ClearselectedGO();
+            }
+
+        }
     }
 
     public void openDetails(int type)
@@ -199,23 +302,24 @@ public class canvasScript : MonoBehaviour
                 {
                     if (!selectedGO.GetComponent<moveScript>().goal.gameObject.CompareTag("targPrefab"))
                     {
-                        unitTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = $"target:\n{selectedGO.GetComponent<moveScript>().goal.gameObject.name}";
+                        unitTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>().text = $"target:\n{selectedGO.GetComponent<moveScript>().goal.gameObject.name}";
                     }
                     else
                     {
-                        unitTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = "target:\nexplore";
+                        unitTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>().text = "target:\nexplore";
                     }
                 }
                 else
                 {
-                    unitTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = "target:\nnone";
+                    unitTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>().text = "target:\nnone";
                 }
-                unitTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = $"lvl: {selectedGO.GetComponent<moveScript>().lvl}\nex: {selectedGO.GetComponent<moveScript>().exp}/{selectedGO.GetComponent<moveScript>().nextExp}";
+                unitTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(2).GetComponent<Text>().text = $"lvl: {selectedGO.GetComponent<moveScript>().lvl}\nex: {selectedGO.GetComponent<moveScript>().exp}/{selectedGO.GetComponent<moveScript>().nextExp}";
                 break;
             case "Respawn":
                 unitTitle.SetActive(false);
                 buildingTitle.SetActive(true);
-                enemyTitle.SetActive(false);                buildingTitle.transform.GetChild(0).GetComponent<Text>().text = selectedGO.name;
+                enemyTitle.SetActive(false);
+                buildingTitle.transform.GetChild(0).GetComponent<Text>().text = selectedGO.name;
                 buildingTitle.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = $"hp: {selectedGO.GetComponent<baseScript>().health} / {selectedGO.GetComponent<baseScript>().maxHealth}";
                 var mask2 = buildingTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(0).GetComponent<RectMask2D>();
                 Vector4 p2 = mask2.padding;
@@ -223,13 +327,13 @@ public class canvasScript : MonoBehaviour
                 mask2.padding = p2;
                 if (baseB.GetComponent<baseScript>().constructing)
                 {
-                    buildingTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = $"building:\n{baseB.GetComponent<baseScript>().constructing.name}";
+                    buildingTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>().text = $"building:\n{baseB.GetComponent<baseScript>().constructing.name}";
                 }
                 else
                 {
-                    buildingTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = "building:\nnothing";
+                    buildingTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>().text = "building:\nnothing";
                 }
-                buildingTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = $"lvl: {selectedGO.GetComponent<baseScript>().level}\nex: {selectedGO.GetComponent<baseScript>().exp} / {selectedGO.GetComponent<baseScript>().nextExp}";
+                buildingTitle.transform.GetChild(1).GetChild(0).GetChild(0).GetChild(2).GetComponent<Text>().text = $"lvl: {selectedGO.GetComponent<baseScript>().level}\nex: {selectedGO.GetComponent<baseScript>().exp} / {selectedGO.GetComponent<baseScript>().nextExp}";
                 break;
             case "Enemy":
                 unitTitle.SetActive(false);
@@ -254,4 +358,18 @@ public class canvasScript : MonoBehaviour
     {
         go.GetComponent<moveScript>().setTarget(baseB);
     }
+    private void ClearselectedGO()
+    {
+        if (selectedGO != null)
+        {
+            GameObject.FindGameObjectWithTag("GameController").GetComponent<canvasScript>().go = null;
+            selectedGO = null;
+        }
+    }
+
+    public void setSettings()
+    {
+        
+    }
+
 }

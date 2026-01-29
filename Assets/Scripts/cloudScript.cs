@@ -16,10 +16,10 @@ public class cloudScript : MonoBehaviour
         if (isDying)
         {
             timer += Time.deltaTime;
+            Color currentColor = gameObject.GetComponent<SpriteRenderer>().color;
+            currentColor.a = Mathf.Lerp(1f, 0f, timer / deathTime);
+            GetComponent<SpriteRenderer>().color = currentColor;
         }
-        Color currentColor = gameObject.GetComponent<SpriteRenderer>().color;
-        currentColor.a = Mathf.Lerp(1f, 0f, timer / deathTime);
-        GetComponent<SpriteRenderer>().color = currentColor;
     }
     public void removeCloud()
     {

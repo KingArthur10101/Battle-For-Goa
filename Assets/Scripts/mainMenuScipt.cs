@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class mainMenuScipt : MonoBehaviour
 {
+    public int unlocked = 1;
+
     public GameObject Main;
     public GameObject LevelSelect;
     public GameObject Settings;
@@ -16,6 +17,7 @@ public class mainMenuScipt : MonoBehaviour
     public AudioClip num3;
     public int section = 0;
     public bool audioS = true;
+    public GameObject fstButton;
 
     /*
     0: Title
@@ -24,6 +26,36 @@ public class mainMenuScipt : MonoBehaviour
     3: About
     */
 
+    void Start()
+    {
+        if (PlayerPrefs.HasKey("unlocked"))
+        {
+            unlocked = PlayerPrefs.GetInt("unlocked");
+            Debug.Log($"SAVE FOUND");
+        }
+        else
+        {
+            unlocked = 1;
+            PlayerPrefs.SetInt("unlocked", 1);
+            Debug.Log($"SAVE MADE");
+        }
+        fstButton = transform.GetChild(2).GetChild(1).gameObject;
+        for (int i = PlayerPrefs.GetInt("unlocked"); i>0; i--)
+        {
+            switch (i){
+            case 1:
+                fstButton.transform.GetChild(2).GetComponent<Button>().interactable = true;
+                break;
+            case 2:
+                fstButton.GetComponent<Button>().interactable = true;
+                break;
+            case 3:
+                fstButton.transform.GetChild(1).GetComponent<Button>().interactable = true;
+                break;
+            }
+        }
+
+    }
     public void changeSect(int chg)
     {
         section += chg;
